@@ -21,6 +21,7 @@ package net.minecraft.src;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.Direction;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 
@@ -51,8 +52,9 @@ public class mod_SimpleInfoHud extends BaseMod
 		// feet pos also == minecraft.thePlayer.posY - minecraft.thePlayer.yOffset
 		int feet = MathHelper.floor_double(minecraft.thePlayer.boundingBox.minY);
 
-		float angle = minecraft.thePlayer.rotationYaw;
-		int direction = MathHelper.floor_double((double)(angle * 4.0F / 360.0F) + 0.5D) & 3;
+		float yaw = minecraft.thePlayer.rotationYaw;
+		float angle = MathHelper.wrapAngleTo180_float(yaw);
+		char direction = Direction.directions[MathHelper.floor_double((double)(yaw * 4.0F / 360.0F) + 0.5D) & 3].charAt(0);
 
 		long time = minecraft.theWorld.getWorldTime() % 24000;
 		long minutes = (6*60 + 24*60 * time / 24000) % (24*60);
