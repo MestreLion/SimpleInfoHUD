@@ -22,6 +22,7 @@ package net.minecraft.src;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.EnumSkyBlock;
 
 public class mod_SimpleInfoHud extends BaseMod
 {
@@ -48,7 +49,19 @@ public class mod_SimpleInfoHud extends BaseMod
 		int y = MathHelper.floor_double(minecraft.thePlayer.posY);
 
 		// feet pos also == minecraft.thePlayer.posY - minecraft.thePlayer.yOffset
-		msg = String.format("[%d %d %.0f]", new Object[] {x, z,minecraft.thePlayer.boundingBox.minY});
+		int feet = MathHelper.floor_double(minecraft.thePlayer.boundingBox.minY);
+
+		float angle = minecraft.thePlayer.rotationYaw;
+		int direction = MathHelper.floor_double((double)(angle * 4.0F / 360.0F) + 0.5D) & 3;
+
+		long time = minecraft.theWorld.getWorldTime() % 24000;
+		long minutes = (6*60 + 24*60 * time / 24000) % (24*60);
+
+		int light = minecraft.theWorld.getChunkFromBlockCoords(x, z).getSavedLightValue(EnumSkyBlock.Block, x & 15, y, z & 15);
+		String biome = minecraft.theWorld.getBiomeGenForCoords(x, z).biomeName;
+		String fps = minecraft.debug.split(",", 2)[0];
+
+		msg = String.format("[%d %d %d]", new Object[] {x, z, feet});
 		fr.drawStringWithShadow(msg, msgX, msgY, color);
 
 		return true;
