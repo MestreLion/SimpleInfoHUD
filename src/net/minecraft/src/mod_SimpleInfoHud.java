@@ -20,6 +20,8 @@
 package net.minecraft.src;
 
 import net.minecraft.client.Minecraft;
+
+// Remove these imports if using the non-Forge MCP+ModLoader environment
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.MathHelper;
@@ -63,7 +65,10 @@ public class mod_SimpleInfoHud extends BaseMod
 		String biome = minecraft.theWorld.getBiomeGenForCoords(x, z).biomeName;
 		String fps = minecraft.debug.split(",", 2)[0];
 
-		msg = String.format("[%d %d %d]", new Object[] {x, z, feet});
+		msg = String.format(
+				"[%d %d %d] [%s %+3.0f] %02d:%02d %d %s %s",
+				x, z, feet, direction, angle, minutes / 60, minutes % 60,
+				light, biome, fps);
 		fr.drawStringWithShadow(msg, msgX, msgY, color);
 
 		return true;
