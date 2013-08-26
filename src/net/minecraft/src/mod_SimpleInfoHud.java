@@ -20,6 +20,8 @@
 package net.minecraft.src;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.MathHelper;
 
 public class mod_SimpleInfoHud extends BaseMod
 {
@@ -34,18 +36,26 @@ public class mod_SimpleInfoHud extends BaseMod
 		// Screen "margin" is 2,2, Line height is 10 or 8,
 		// color is 0xFFFFFF (white) or 0xE0E0E0 (gray)
 
-		String msg = "Simple Info HUD";
+		FontRenderer fr = minecraft.fontRenderer;
+
+		String msg = "";
 		int msgX = 2;
 		int msgY = 2;
 		int color = 0xFFFFFF;
 
-		minecraft.fontRenderer.drawStringWithShadow(msg, msgX, msgY, color);
+		int x = MathHelper.floor_double(minecraft.thePlayer.posX);
+		int z = MathHelper.floor_double(minecraft.thePlayer.posZ);
+		int y = MathHelper.floor_double(minecraft.thePlayer.posY);
+
+		// feet pos also == minecraft.thePlayer.posY - minecraft.thePlayer.yOffset
+		msg = String.format("[%d %d %.0f]", new Object[] {x, z,minecraft.thePlayer.boundingBox.minY});
+		fr.drawStringWithShadow(msg, msgX, msgY, color);
 
 		return true;
 	}
 
 	public String getVersion()
 	{
-			return "Version 0.1";
+			return "Version 1.0";
 	}
 }
