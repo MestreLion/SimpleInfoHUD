@@ -49,10 +49,10 @@ public class mod_SimpleInfoHud extends BaseMod
 
 		int x = MathHelper.floor_double(minecraft.thePlayer.posX);
 		int z = MathHelper.floor_double(minecraft.thePlayer.posZ);
-		int y = MathHelper.floor_double(minecraft.thePlayer.posY);
 
-		// feet pos also == minecraft.thePlayer.posY - minecraft.thePlayer.yOffset
-		int feet = MathHelper.floor_double(minecraft.thePlayer.boundingBox.minY);
+		// Feet Y, the one that matters. (also == posY - yOffset)
+		// For head Y: minecraft.thePlayer.posY
+		int fy = MathHelper.floor_double(minecraft.thePlayer.boundingBox.minY);
 
 		float yaw = minecraft.thePlayer.rotationYaw;
 		float angle = MathHelper.wrapAngleTo180_float(yaw);
@@ -61,13 +61,13 @@ public class mod_SimpleInfoHud extends BaseMod
 		long time = minecraft.theWorld.getWorldTime() % 24000;
 		long minutes = (6*60 + 24*60 * time / 24000) % (24*60);
 
-		int light = minecraft.theWorld.getChunkFromBlockCoords(x, z).getSavedLightValue(EnumSkyBlock.Block, x & 15, y, z & 15);
+		int light = minecraft.theWorld.getChunkFromBlockCoords(x, z).getSavedLightValue(EnumSkyBlock.Block, x & 15, fy, z & 15);
 		String biome = minecraft.theWorld.getBiomeGenForCoords(x, z).biomeName;
 		String fps = minecraft.debug.split(",", 2)[0];
 
 		msg = String.format(
 				"[%d %d %d] [%s %+3.0f] %02d:%02d %d %s %s",
-				x, z, feet, direction, angle, minutes / 60, minutes % 60,
+				x, z, fy, direction, angle, minutes / 60, minutes % 60,
 				light, biome, fps);
 		fr.drawStringWithShadow(msg, msgX, msgY, color);
 
