@@ -23,15 +23,24 @@ import net.minecraft.client.Minecraft;
 
 // Remove these imports if using the non-Forge MCP+ModLoader environment
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.Direction;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 
 public class mod_SimpleInfoHud extends BaseMod
 {
+	public String[] directions = {"S", "SW", "W", "NW", "N", "NE", "E", "SE"};
+
 	public void load()
 	{
 		ModLoader.setInGameHook(this, true, false);
+	}
+
+	public int wrapAngleToDirection(float yaw, int zones)
+	{
+		int angle = (int)(yaw + 360/(2*zones) + 0.5);
+		if (angle < 0)
+			angle += 360;
+		return (angle % 360) / (360/zones);
 	}
 
 	public boolean onTickInGame(float f, Minecraft minecraft)
@@ -56,7 +65,7 @@ public class mod_SimpleInfoHud extends BaseMod
 
 		float yaw = minecraft.thePlayer.rotationYaw;
 		float angle = MathHelper.wrapAngleTo180_float(yaw);
-		char direction = Direction.directions[MathHelper.floor_double((double)(yaw * 4.0F / 360.0F) + 0.5D) & 3].charAt(0);
+		String direction = directions[wrapAngleToDirection(yaw, directions.length)];
 
 		long time = minecraft.theWorld.getWorldTime() % 24000;
 		long minutes = (6*60 + 24*60 * time / 24000) % (24*60);
@@ -66,7 +75,7 @@ public class mod_SimpleInfoHud extends BaseMod
 		String fps = minecraft.debug.split(",", 2)[0];
 
 		msg = String.format(
-				"[%d %d %d] [%s %+3.0f] %02d:%02d %d %s %s",
+				"[%d %d %d] [%-2s %+3.0f] %02d:%02d %d %s %s",
 				x, z, fy, direction, angle, minutes / 60, minutes % 60,
 				light, biome, fps);
 		fr.drawStringWithShadow(msg, msgX, msgY, color);
