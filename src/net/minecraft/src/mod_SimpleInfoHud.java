@@ -20,18 +20,30 @@
 package net.minecraft.src;
 
 import net.minecraft.client.Minecraft;
+import org.lwjgl.input.Keyboard;
 
 // Remove these imports if using the non-Forge MCP+ModLoader environment
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 
 public class mod_SimpleInfoHud extends BaseMod
 {
 	public String[] directions = {"S", "SW", "W", "NW", "N", "NE", "E", "SE"};
+	public KeyBinding activateKey = new KeyBinding("Simple Info HUD", Keyboard.KEY_F4);
+	public boolean showHud = true;
+
+	public void keyboardEvent(KeyBinding event)
+	{
+		if (event == activateKey)
+			showHud = !showHud;
+	}
 
 	public void load()
 	{
+		ModLoader.registerKey(this, activateKey,  false);
+		ModLoader.addLocalization("Simple Info HUD", "Simple Info HUD");
 		ModLoader.setInGameHook(this, true, false);
 	}
 
@@ -45,6 +57,9 @@ public class mod_SimpleInfoHud extends BaseMod
 
 	public boolean onTickInGame(float f, Minecraft minecraft)
 	{
+		if (!showHud)
+			return true;
+
 		// For reference: F3 debug info is generated at GuiIngame.renderGameOverlay() @ 440
 		// Screen "margin" is 2,2, Line height is 10 or 8,
 		// color is 0xFFFFFF (white) or 0xE0E0E0 (gray)
