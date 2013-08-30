@@ -89,10 +89,20 @@ public class mod_SimpleInfoHud extends BaseMod
 		String biome = minecraft.theWorld.getBiomeGenForCoords(x, z).biomeName;
 		String fps = minecraft.debug.split(",", 2)[0];
 
-		msg = String.format(
-				"[%d %d %d] [%-2s %+3.0f] %02d:%02d %d %s %s",
-				x, z, fy, direction, angle, minutes / 60, minutes % 60,
-				light, biome, fps);
+		boolean advanced = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
+
+		if (advanced) {
+			msg = String.format(
+					"[%d %d %d] [%-2s %+4.0f] %02d:%02d L%2d %s %s",
+					x, z, fy, direction, angle, minutes / 60, minutes % 60,
+					light, biome, fps);
+		}
+		else {
+			msg = String.format(
+					"[%d %d %d] [%-2s] %02d:%02d %s",
+					x, z, fy, direction, minutes / 60, minutes % 60, light <=7 ? "UNSAFE" : "");
+		}
+
 		fr.drawStringWithShadow(msg, msgX, msgY, color);
 
 		return true;
