@@ -77,7 +77,8 @@ public class mod_SimpleInfoHud extends BaseMod
 
 		float yaw = minecraft.thePlayer.rotationYaw;
 		float angle = MathHelper.wrapAngleTo180_float(yaw);
-		String direction = directions[wrapAngleToDirection(yaw, directions.length)];
+		int facing = wrapAngleToDirection(yaw, directions.length);
+		String direction = directions[facing];
 
 		String realTime = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd").format(Calendar.getInstance().getTime());
 		long time = minecraft.theWorld.getWorldTime() % 24000;
@@ -89,17 +90,20 @@ public class mod_SimpleInfoHud extends BaseMod
 
 		boolean advanced = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
 
+		msgX += displayHud(minecraft, msgX, msgY, color,
+				"[%d %d %3d] [%" + (facing % 4 == 0 ? "-" : "") + "2s",
+				x, z, fy, direction);
+
 		if (advanced) {
 			msgX += displayHud(minecraft, msgX, msgY, color,
-					"[%d %d %d] [%-2s %+4.0f] T%d %s L%2d %s %s",
-					x, z, fy, direction, angle, time, realTime, light, biome, fps);
+					"%+4.0f] T%5d %s L%2d %s %s",
+					angle, time, realTime, light, biome, fps);
 		}
 		else {
 			msgX += displayHud(minecraft, msgX, msgY, color,
-					"[%d %d %d] [%-2s] %02d:%02d %s",
-					x, z, fy, direction, minutes / 60, minutes % 60, light <=7 ? "UNSAFE" : "");
+					"] %02d:%02d %s",
+					minutes / 60, minutes % 60, light <=7 ? "UNSAFE" : "");
 		}
-
 		return true;
 	}
 
