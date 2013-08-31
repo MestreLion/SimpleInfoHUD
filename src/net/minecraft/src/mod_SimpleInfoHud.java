@@ -79,7 +79,7 @@ public class mod_SimpleInfoHud extends BaseMod
 		float angle = MathHelper.wrapAngleTo180_float(yaw);
 		String direction = directions[wrapAngleToDirection(yaw, directions.length)];
 
-		String realTime = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd").format(Calendar.getInstance().getTime());
+		String realTime = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
 		long time = minecraft.theWorld.getWorldTime() % 24000;
 		long minutes = (6*60 + 24*60 * time / 24000) % (24*60);
 
