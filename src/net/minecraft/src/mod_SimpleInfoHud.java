@@ -82,26 +82,44 @@ public class mod_SimpleInfoHud extends BaseMod
 		String realTime = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
 		long time = minecraft.theWorld.getWorldTime() % 24000;
 		long minutes = (6*60 + 24*60 * time / 24000) % (24*60);
+		/*
+		 * Reference: http://www.minecraftwiki.net/wiki/Day-night_cycle
+		 * Day:  10.0 rl minutes = 12000 ticks = 720 mc minutes;     0
+		 * Dusk:  1.5 rl minutes =  1800 ticks = 108 mc minutes; 12000 (mobs: 13187)
+		 * Night: 7.0 rl minutes =  8400 ticks = 504 mc minutes; 13800
+		 * Dawn:  1.5 rl minutes =  1800 ticks = 108 mc minutes; 22200 (mobs: 22812)
+		 */
+		Color timeColor = color;  // Day, default color
+		if       (time > 22812) timeColor = Color.YELLOW;
+		else if (time > 22200) timeColor = Color.ORANGE;
+		else if (time > 13800) timeColor = Color.RED;
+		else if (time > 13187) timeColor = Color.ORANGE;
+		else if (time > 12000) timeColor = Color.YELLOW;
 
 		int light = minecraft.theWorld.getChunkFromBlockCoords(x, z).getSavedLightValue(EnumSkyBlock.Block, x & 15, fy, z & 15);
+		boolean lowLight = light <= 7;
+		Color lightColor = lowLight ? Color.RED : color;
+
 		String biome = minecraft.theWorld.getBiomeGenForCoords(x, z).biomeName;
-		String fps = minecraft.debug.split(",", 2)[0];
+		String fps = minecraft.debug.split(",", 2)[0].replaceFirst(" ", "");
 
 		boolean advanced = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
 
-		msgX += displayHud(minecraft, msgX, msgY, color,
-				"[%d %d %3d] [%-2s",
-				x, z, fy, direction);
+		msgX += displayHud(minecraft, msgX, msgY, color, "[%d %d %3d]", x, z, fy);
 
 		if (advanced) {
-			msgX += displayHud(minecraft, msgX, msgY, color,
-					"%+4.0f] T%5d %s L%2d %s %s",
-					angle, time, realTime, light, biome, fps);
+			msgX += displayHud(minecraft, msgX, msgY, color, "[%-2s%+4.0f]", direction, angle);
+			msgX += displayHud(minecraft, msgX, msgY, timeColor, "T%5d", time);
+			msgX += displayHud(minecraft, msgX, msgY, color, "%s", realTime);
+			msgX += displayHud(minecraft, msgX, msgY, lightColor, "L%2d", light);
+			msgX += displayHud(minecraft, msgX, msgY, color, "%s %s", biome, fps);
 		}
 		else {
-			msgX += displayHud(minecraft, msgX, msgY, color,
-					"] %02d:%02d %s",
-					minutes / 60, minutes % 60, light <=7 ? "UNSAFE" : "");
+			msgX += displayHud(minecraft, msgX, msgY, color, "[%-2s]", direction);
+			msgX += displayHud(minecraft, msgX, msgY, timeColor,
+					"%02d:%02d", minutes / 60, minutes % 60);
+			if (lowLight)
+				msgX += displayHud(minecraft, msgX, msgY, lightColor, "UNSAFE");
 		}
 		return true;
 	}
@@ -132,6 +150,6 @@ public class mod_SimpleInfoHud extends BaseMod
 			minecraft.fontRenderer.drawStringWithShadow(msg[i], x, y, rgb);
 			x += minecraft.fontRenderer.getStringWidth(msg[i]);
 		}
-		return x - startX;
+		return x - startX + minecraft.fontRenderer.getCharWidth(' '); // 4
 	}
 }
