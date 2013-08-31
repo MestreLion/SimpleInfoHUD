@@ -36,6 +36,8 @@ public class mod_SimpleInfoHud extends BaseMod
 	public String[] directions = {"S", "SW", " W", "NW", "N", "NE", " E", "SE"};
 	public KeyBinding activateKey = new KeyBinding("Simple Info HUD", Keyboard.KEY_F4);
 	public boolean showHud = true;
+	private int monoWidth;
+	private int spaceWidth;
 
 	public String getVersion()
 	{
@@ -47,6 +49,8 @@ public class mod_SimpleInfoHud extends BaseMod
 		ModLoader.registerKey(this, activateKey,  false);
 		ModLoader.addLocalization("Simple Info HUD", "Simple Info HUD");
 		ModLoader.setInGameHook(this, true, false);
+		monoWidth  = ModLoader.getMinecraftInstance().fontRenderer.getCharWidth('W'); // 6
+		spaceWidth = ModLoader.getMinecraftInstance().fontRenderer.getCharWidth(' '); // 4
 	}
 
 	public void keyboardEvent(KeyBinding event)
@@ -136,7 +140,6 @@ public class mod_SimpleInfoHud extends BaseMod
 	public int displayHud(Minecraft minecraft, int x, int y, Color color, String format, Object... args)
 	{
 		String[] msg = String.format(format, args).split(" ", -1);
-		int monoWidth = minecraft.fontRenderer.getCharWidth('W');
 		int rgb = color.getRGB();
 		int startX = x;
 		int i = 0;
@@ -150,6 +153,6 @@ public class mod_SimpleInfoHud extends BaseMod
 			minecraft.fontRenderer.drawStringWithShadow(msg[i], x, y, rgb);
 			x += minecraft.fontRenderer.getStringWidth(msg[i]);
 		}
-		return x - startX + minecraft.fontRenderer.getCharWidth(' '); // 4
+		return x - startX + spaceWidth;
 	}
 }
