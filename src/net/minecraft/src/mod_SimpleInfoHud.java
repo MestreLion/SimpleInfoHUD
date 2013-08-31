@@ -19,6 +19,7 @@
 
 package net.minecraft.src;
 
+import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import org.lwjgl.input.Keyboard;
@@ -72,7 +73,7 @@ public class mod_SimpleInfoHud extends BaseMod
 		String msg = "";
 		int msgX = 2;
 		int msgY = 2;
-		int color = 0xFFFFFF;
+		Color color = Color.WHITE;
 
 		int x = MathHelper.floor_double(minecraft.thePlayer.posX);
 		int z = MathHelper.floor_double(minecraft.thePlayer.posZ);
@@ -107,7 +108,7 @@ public class mod_SimpleInfoHud extends BaseMod
 					x, z, fy, direction, minutes / 60, minutes % 60, light <=7 ? "UNSAFE" : "");
 		}
 
-		fr.drawStringWithShadow(msg, msgX, msgY, color);
+		fr.drawStringWithShadow(msg, msgX, msgY, color.getRGB());
 
 		return true;
 	}
