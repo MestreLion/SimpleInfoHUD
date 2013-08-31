@@ -33,7 +33,7 @@ import net.minecraft.world.EnumSkyBlock;
 
 public class mod_SimpleInfoHud extends BaseMod
 {
-	public String[] directions = {"S", "SW", "W", "NW", "N", "NE", "E", "SE"};
+	public String[] directions = {"S", "SW", " W", "NW", "N", "NE", " E", "SE"};
 	public KeyBinding activateKey = new KeyBinding("Simple Info HUD", Keyboard.KEY_F4);
 	public boolean showHud = true;
 
@@ -77,8 +77,7 @@ public class mod_SimpleInfoHud extends BaseMod
 
 		float yaw = minecraft.thePlayer.rotationYaw;
 		float angle = MathHelper.wrapAngleTo180_float(yaw);
-		int facing = wrapAngleToDirection(yaw, directions.length);
-		String direction = directions[facing];
+		String direction = directions[wrapAngleToDirection(yaw, directions.length)];
 
 		String realTime = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd").format(Calendar.getInstance().getTime());
 		long time = minecraft.theWorld.getWorldTime() % 24000;
@@ -91,7 +90,7 @@ public class mod_SimpleInfoHud extends BaseMod
 		boolean advanced = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
 
 		msgX += displayHud(minecraft, msgX, msgY, color,
-				"[%d %d %3d] [%" + (facing % 4 == 0 ? "-" : "") + "2s",
+				"[%d %d %3d] [%-2s",
 				x, z, fy, direction);
 
 		if (advanced) {
