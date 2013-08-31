@@ -19,8 +19,11 @@
 
 package net.minecraft.src;
 
-import net.minecraft.client.Minecraft;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import org.lwjgl.input.Keyboard;
+
+import net.minecraft.client.Minecraft;
 
 // Remove these imports if using the non-Forge MCP+ModLoader environment
 import net.minecraft.client.gui.FontRenderer;
@@ -82,6 +85,7 @@ public class mod_SimpleInfoHud extends BaseMod
 		float angle = MathHelper.wrapAngleTo180_float(yaw);
 		String direction = directions[wrapAngleToDirection(yaw, directions.length)];
 
+		String realTime = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd").format(Calendar.getInstance().getTime());
 		long time = minecraft.theWorld.getWorldTime() % 24000;
 		long minutes = (6*60 + 24*60 * time / 24000) % (24*60);
 
@@ -93,8 +97,8 @@ public class mod_SimpleInfoHud extends BaseMod
 
 		if (advanced) {
 			msg = String.format(
-					"[%d %d %d] [%-2s %+4.0f] %02d:%02d L%2d %s %s",
-					x, z, fy, direction, angle, minutes / 60, minutes % 60,
+					"[%d %d %d] [%-2s %+4.0f] T%d %s L%2d %s %s",
+					x, z, fy, direction, angle, time, realTime,
 					light, biome, fps);
 		}
 		else {
