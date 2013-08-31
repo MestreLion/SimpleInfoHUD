@@ -27,7 +27,6 @@ import org.lwjgl.input.Keyboard;
 import net.minecraft.client.Minecraft;
 
 // Remove these imports if using the non-Forge MCP+ModLoader environment
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
@@ -65,9 +64,6 @@ public class mod_SimpleInfoHud extends BaseMod
 		// Screen "margin" is 2,2, Line height is 10 or 8,
 		// color is 0xFFFFFF (white) or 0xE0E0E0 (gray)
 
-		FontRenderer fr = minecraft.fontRenderer;
-
-		String msg = "";
 		int msgX = 2;
 		int msgY = 2;
 		Color color = Color.WHITE;
@@ -94,18 +90,15 @@ public class mod_SimpleInfoHud extends BaseMod
 		boolean advanced = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
 
 		if (advanced) {
-			msg = String.format(
+			msgX += displayHud(minecraft, msgX, msgY, color,
 					"[%d %d %d] [%-2s %+4.0f] T%d %s L%2d %s %s",
-					x, z, fy, direction, angle, time, realTime,
-					light, biome, fps);
+					x, z, fy, direction, angle, time, realTime, light, biome, fps);
 		}
 		else {
-			msg = String.format(
+			msgX += displayHud(minecraft, msgX, msgY, color,
 					"[%d %d %d] [%-2s] %02d:%02d %s",
 					x, z, fy, direction, minutes / 60, minutes % 60, light <=7 ? "UNSAFE" : "");
 		}
-
-		fr.drawStringWithShadow(msg, msgX, msgY, color.getRGB());
 
 		return true;
 	}
@@ -116,5 +109,26 @@ public class mod_SimpleInfoHud extends BaseMod
 		if (angle < 0)
 			angle += 360;
 		return angle / (360/zones);
+	}
+
+	// Pseudo-Monospaced display: spaces are printed with the same width as "W"
+	public int displayHud(Minecraft minecraft, int x, int y, Color color, String format, Object... args)
+	{
+		String[] msg = String.format(format, args).split(" ", -1);
+		int monoWidth = minecraft.fontRenderer.getCharWidth('W');
+		int rgb = color.getRGB();
+		int startX = x;
+		int i = 0;
+		for (; i < msg.length-1; i++) {
+			minecraft.fontRenderer.drawStringWithShadow(msg[i], x, y, rgb);
+			x += minecraft.fontRenderer.getStringWidth(msg[i]);
+			minecraft.fontRenderer.drawStringWithShadow(" ", x, y, rgb);
+			x += monoWidth;
+		}
+		if (msg[i] != "") {
+			minecraft.fontRenderer.drawStringWithShadow(msg[i], x, y, rgb);
+			x += minecraft.fontRenderer.getStringWidth(msg[i]);
+		}
+		return x - startX;
 	}
 }
