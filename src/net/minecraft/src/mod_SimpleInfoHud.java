@@ -41,7 +41,7 @@ public class mod_SimpleInfoHud extends BaseMod
 
 	public String getVersion()
 	{
-			return "Version 2.0";
+			return "Version 2.1";
 	}
 
 	public void load()
