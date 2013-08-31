@@ -49,10 +49,10 @@ public class mod_SimpleInfoHud extends BaseMod
 
 	public int wrapAngleToDirection(float yaw, int zones)
 	{
-		int angle = (int)(yaw + 360/(2*zones) + 0.5);
+		int angle = (int)(yaw + 360/(2*zones) + 0.5) % 360;
 		if (angle < 0)
 			angle += 360;
-		return (angle % 360) / (360/zones);
+		return angle / (360/zones);
 	}
 
 	public boolean onTickInGame(float f, Minecraft minecraft)
