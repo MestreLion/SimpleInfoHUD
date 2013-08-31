@@ -38,10 +38,9 @@ public class mod_SimpleInfoHud extends BaseMod
 	public KeyBinding activateKey = new KeyBinding("Simple Info HUD", Keyboard.KEY_F4);
 	public boolean showHud = true;
 
-	public void keyboardEvent(KeyBinding event)
+	public String getVersion()
 	{
-		if (event == activateKey)
-			showHud = !showHud;
+			return "Version 2.0";
 	}
 
 	public void load()
@@ -51,12 +50,10 @@ public class mod_SimpleInfoHud extends BaseMod
 		ModLoader.setInGameHook(this, true, false);
 	}
 
-	public int wrapAngleToDirection(float yaw, int zones)
+	public void keyboardEvent(KeyBinding event)
 	{
-		int angle = (int)(yaw + 360/(2*zones) + 0.5) % 360;
-		if (angle < 0)
-			angle += 360;
-		return angle / (360/zones);
+		if (event == activateKey)
+			showHud = !showHud;
 	}
 
 	public boolean onTickInGame(float f, Minecraft minecraft)
@@ -113,8 +110,11 @@ public class mod_SimpleInfoHud extends BaseMod
 		return true;
 	}
 
-	public String getVersion()
+	public int wrapAngleToDirection(float yaw, int zones)
 	{
-			return "Version 2.0";
+		int angle = (int)(yaw + 360/(2*zones) + 0.5) % 360;
+		if (angle < 0)
+			angle += 360;
+		return angle / (360/zones);
 	}
 }
