@@ -101,18 +101,19 @@ public class mod_SimpleInfoHud extends BaseMod
 		else if (time > 12000) timeColor = Color.YELLOW;
 
 		String biome = minecraft.theWorld.getBiomeGenForCoords(x, z).biomeName;
-		String fps = minecraft.debug.split(",", 2)[0].replaceFirst(" ", "");
+		String fps = minecraft.debug.split(",", 2)[0];
 
 		boolean advanced = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
 
-		msgX += displayHud(minecraft, msgX, msgY, color, "[%d %d %3d]", x, z, fy);
+		msgX += displayHud(minecraft, msgX, msgY, color, "[%d %d %d]", x, z, fy);
 
 		if (advanced) {
 			msgX += displayHud(minecraft, msgX, msgY, color, "[%-2s%+4.0f]", direction, angle);
 			msgX += displayHud(minecraft, msgX, msgY, timeColor,
 					"%02d:%02d T%5d", minutes / 60, minutes % 60, time);
-			msgX += displayHud(minecraft, msgX, msgY, color, "%s", realTime);
-			msgX += displayHud(minecraft, msgX, msgY, color, "%s %s", biome, fps);
+			msgX += displayHud(minecraft, msgX, msgY, color, realTime);
+			msgX += displayHud(minecraft, msgX, msgY, color, biome);
+			msgX += displayHud(minecraft, msgX, msgY, color, fps);
 		}
 		else {
 			msgX += displayHud(minecraft, msgX, msgY, color, "[%-2s]", direction);
