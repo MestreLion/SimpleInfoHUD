@@ -109,14 +109,13 @@ public class mod_SimpleInfoHud extends BaseMod
 
 		if (advanced) {
 			msgX += displayHud(minecraft, msgX, msgY, color, "[%-2s%+4.0f]", direction, angle);
-			msgX += displayHud(minecraft, msgX, msgY, timeColor, "T%5d", time);
+			msgX += displayHud(minecraft, msgX, msgY, timeColor,
+					"%02d:%02d T%5d", minutes / 60, minutes % 60, time);
 			msgX += displayHud(minecraft, msgX, msgY, color, "%s", realTime);
 			msgX += displayHud(minecraft, msgX, msgY, color, "%s %s", biome, fps);
 		}
 		else {
 			msgX += displayHud(minecraft, msgX, msgY, color, "[%-2s]", direction);
-			msgX += displayHud(minecraft, msgX, msgY, timeColor,
-					"%02d:%02d", minutes / 60, minutes % 60);
 		}
 		return true;
 	}
