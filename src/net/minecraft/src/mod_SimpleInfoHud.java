@@ -91,10 +91,10 @@ public class mod_SimpleInfoHud extends BaseMod
 		 * Day:  10.0 rl minutes = 12000 ticks = 720 mc minutes;     0
 		 * Dusk:  1.5 rl minutes =  1800 ticks = 108 mc minutes; 12000 (mobs: 13187)
 		 * Night: 7.0 rl minutes =  8400 ticks = 504 mc minutes; 13800
-		 * Dawn:  1.5 rl minutes =  1800 ticks = 108 mc minutes; 22200 (mobs: 22812)
+		 * Dawn:  1.5 rl minutes =  1800 ticks = 108 mc minutes; 22200 (mobs: 22812, burn at 23500)
 		 */
 		Color timeColor = color;  // Day, default color
-		if       (time > 22812) timeColor = Color.YELLOW;
+		if       (time > 23500) timeColor = Color.YELLOW;
 		else if (time > 22200) timeColor = Color.ORANGE;
 		else if (time > 13800) timeColor = Color.RED;
 		else if (time > 13187) timeColor = Color.ORANGE;
