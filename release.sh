@@ -24,5 +24,8 @@ cd reobf/minecraft
 zip -r "$moddir"/release/"[${mcversion}]$modname"."$modversion".zip *
 cd "$moddir"
 rm -rf "$mcpdir"
+if [[ "$1" ]] && [[ -z "$2" ]] ; then
+	git tag "$modversion" || true
+fi
 
 echo "Done"
