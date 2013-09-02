@@ -29,7 +29,6 @@ import net.minecraft.client.Minecraft;
 // Remove these imports if using the non-Forge MCP+ModLoader environment
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.EnumSkyBlock;
 
 public class mod_SimpleInfoHud extends BaseMod
 {
@@ -61,7 +60,7 @@ public class mod_SimpleInfoHud extends BaseMod
 
 	public boolean onTickInGame(float f, Minecraft minecraft)
 	{
-		if (!showHud)
+		if (!showHud || minecraft.isGamePaused)
 			return true;
 
 		// For reference: F3 debug info is generated at GuiIngame.renderGameOverlay() @ 440
@@ -69,7 +68,7 @@ public class mod_SimpleInfoHud extends BaseMod
 		// color is 0xFFFFFF (white) or 0xE0E0E0 (gray)
 
 		int msgX = 2;
-		int msgY = 2;
+		int msgY = minecraft.gameSettings.showDebugInfo ? 128 : 2;
 		Color color = Color.WHITE;
 
 		int x = MathHelper.floor_double(minecraft.thePlayer.posX);
