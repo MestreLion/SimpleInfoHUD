@@ -3,13 +3,12 @@
 	"id": "simple-info-hud",
 	"version": "${version}",
 	"name": "Simple Info HUD",
-	"description": "This is an example description! Tell everyone what your mod is about!",
-	"authors": [
-		"Me!"
-	],
+	"description": "Displays useful info in an unobtrusive way ",
+	"authors": [ "MestreLion" ],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/MestreLion/SimpleInfoHUD",
+		"sources": "https://github.com/MestreLion/SimpleInfoHUD",
+		"email": "minecraft@rodrigosilva.com",
 	},
 	"license": "LGPL-3.0-or-later",
 	"icon": "assets/simple-info-hud/icon.png",
@@ -28,7 +27,4 @@
 		"java": ">=8",
 		"fabric": "*"
 	},
-	"suggests": {
-		"another-mod": "*"
-	}
 }
