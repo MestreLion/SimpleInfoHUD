@@ -8,11 +8,12 @@
 	"contact": {
 		"homepage": "https://github.com/MestreLion/SimpleInfoHUD",
 		"sources": "https://github.com/MestreLion/SimpleInfoHUD",
+		"issues": "https://github.com/MestreLion/SimpleInfoHUD/issues",
 		"email": "minecraft@rodrigosilva.com"
 	},
 	"license": "LGPL-3.0-or-later",
 	"icon": "assets/simple-info-hud/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
 		"main": [
 			"com.rodrigosilva.SimpleInfoHUD"
