@@ -5,6 +5,7 @@ import net.fabricmc.api.ModInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.awt.Color;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
@@ -29,12 +30,13 @@ public class SimpleInfoHUD implements ModInitializer {
 	public static final void mainSimpleInfoHUD() {
 		float msgX = 2;
 		float msgY = 2;
-		int color = 0xFFFFFFFF;  // White
-		String msg = "Hello SimpleInfoHUD!";
-		displayHud(msg, msgX, msgY, color);
+		Color color = Color.WHITE;
+		String fmt = "Hello %s!";
+		render(msgX, msgY, color, fmt, MOD_ID);
 	}
 
-	public static void displayHud(String msg, float x, float y, int color) {
-		CLIENT.textRenderer.drawWithShadow(MATRIX_STACK, msg, x, y, color);
+	public static void render(float x, float y, Color color, String format, Object... args) {
+		String msg = String.format(format, args);
+		CLIENT.textRenderer.drawWithShadow(MATRIX_STACK, msg, x, y, color.getRGB());
 	}
 }
