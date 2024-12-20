@@ -16,6 +16,14 @@ public class SimpleInfoHUD implements ModInitializer {
 	public static final MinecraftClient CLIENT = MinecraftClient.getInstance();
 	public static MatrixStack MATRIX_STACK;
 
+	// Constants from the F3 Debug overlay, taken from Minecraft 1.17.1 at
+	// net.minecraft.client.gui.components.DebugScreenOverlay
+	private static final Color GREY = new Color(0xE0E0E0);  // int COLOR_GREY = 14737632;
+	private static final int LINE_HEIGHT = 9;  // int j = 9;
+	private static final int MARGIN_LEFT = 2;
+	private static final int MARGIN_TOP = 2;
+	private static final int DEBUG_HEIGHT = 27 * LINE_HEIGHT;  // 26 lines in 1.16.4 + 1 blank
+
 	@Override
 	public void onInitialize() {
 		// Callback is (DrawContext context, float tickDelta) in Minecraft 1.20+
@@ -28,9 +36,9 @@ public class SimpleInfoHUD implements ModInitializer {
 	}
 
 	public static final void mainSimpleInfoHUD() {
-		float msgX = 2;
-		float msgY = 2;
-		Color color = Color.WHITE;
+		float msgX = MARGIN_LEFT;
+		float msgY = MARGIN_TOP + (CLIENT.options.debugEnabled ? DEBUG_HEIGHT : 0);
+		Color color = GREY;
 		String fmt = "Hello %s!";
 		render(msgX, msgY, color, fmt, MOD_ID);
 	}
