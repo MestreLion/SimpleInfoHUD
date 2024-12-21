@@ -39,12 +39,14 @@ public class SimpleInfoHUD implements ModInitializer {
 		float msgX = MARGIN_LEFT;
 		float msgY = MARGIN_TOP + (CLIENT.options.debugEnabled ? DEBUG_HEIGHT : 0);
 		Color color = GREY;
-		String fmt = "Hello %s!";
-		render(msgX, msgY, color, fmt, MOD_ID);
+		msgX += render(msgX, msgY, color, "Hello ");
+		msgX += render(msgX, msgY, Color.GREEN, MOD_ID);
+		msgX += render(msgX, msgY, color, "!");
 	}
 
-	public static void render(float x, float y, Color color, String format, Object... args) {
+	public static int render(float x, float y, Color color, String format, Object... args) {
 		String msg = String.format(format, args);
 		CLIENT.textRenderer.drawWithShadow(MATRIX_STACK, msg, x, y, color.getRGB());
+		return CLIENT.textRenderer.getWidth​(msg);
 	}
 }
