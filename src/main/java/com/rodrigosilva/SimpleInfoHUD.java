@@ -9,6 +9,8 @@ import java.awt.Color;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.entity.Entity;
 
 public class SimpleInfoHUD implements ModInitializer {
 	public static final String MOD_ID = "simple-info-hud";
@@ -38,10 +40,12 @@ public class SimpleInfoHUD implements ModInitializer {
 	public static final void mainSimpleInfoHUD() {
 		float msgX = MARGIN_LEFT;
 		float msgY = MARGIN_TOP + (CLIENT.options.debugEnabled ? DEBUG_HEIGHT : 0);
-		Color color = GREY;
-		msgX += render(msgX, msgY, color, "Hello ");
-		msgX += render(msgX, msgY, Color.GREEN, MOD_ID);
-		msgX += render(msgX, msgY, color, "!");
+		Color color = GREY;  // Default F3 color, almost white
+
+		// Player info
+		Entity entity = CLIENT.getCameraEntity();
+		BlockPos pos = entity.getBlockPos();
+		msgX += render(msgX, msgY, color, "[%d %d %d]", pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	public static int render(float x, float y, Color color, String format, Object... args) {
