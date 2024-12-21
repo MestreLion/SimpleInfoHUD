@@ -10,7 +10,9 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.entity.Entity;
+
 
 public class SimpleInfoHUD implements ModInitializer {
 	public static final String MOD_ID = "simple-info-hud";
@@ -25,6 +27,9 @@ public class SimpleInfoHUD implements ModInitializer {
 	private static final int MARGIN_LEFT = 2;
 	private static final int MARGIN_TOP = 2;
 	private static final int DEBUG_HEIGHT = 27 * LINE_HEIGHT;  // 26 lines in 1.16.4 + 1 blank
+
+	// Helper constants
+	public static String[] DIRECTIONS = {"S", "SW", " W", "NW", "N", "NE", " E", "SE"};
 
 	@Override
 	public void onInitialize() {
@@ -42,15 +47,30 @@ public class SimpleInfoHUD implements ModInitializer {
 		float msgY = MARGIN_TOP + (CLIENT.options.debugEnabled ? DEBUG_HEIGHT : 0);
 		Color color = GREY;  // Default F3 color, almost white
 
-		// Player info
+		// Player Position
 		Entity entity = CLIENT.getCameraEntity();
 		BlockPos pos = entity.getBlockPos();
 		msgX += render(msgX, msgY, color, "[%d %d %d]", pos.getX(), pos.getY(), pos.getZ());
+
+		// Player Direction
+		float yaw = entity.yaw;  // Not wrapped, full range of negative and positive angles
+		float angle = MathHelper.wrapDegrees(yaw);  // Yaw wrapped to [-180, +180]
+		String direction = getDirection(yaw);
+		msgX += render(msgX, msgY, color, "[%-2s]", direction);  // Simple
+		msgX += render(msgX, msgY, color, "[%-2s%+5.1f]", direction, angle);  // Advanced
 	}
 
 	public static int render(float x, float y, Color color, String format, Object... args) {
 		String msg = String.format(format, args);
 		CLIENT.textRenderer.drawWithShadow(MATRIX_STACK, msg, x, y, color.getRGB());
 		return CLIENT.textRenderer.getWidth​(msg);
+	}
+
+	public static String getDirection(float yaw) {
+		int zones = DIRECTIONS.length;
+		int angle = (int)(yaw + 360/(2*zones) + 0.5) % 360;
+		if (angle < 0)
+			angle += 360;
+		return DIRECTIONS[angle / (360/zones)];
 	}
 }
