@@ -58,13 +58,13 @@ public class SimpleInfoHUD implements ModInitializer {
 		float yaw = entity.yaw;  // Not wrapped, full range of negative and positive angles
 		float angle = MathHelper.wrapDegrees(yaw);  // Yaw wrapped to [-180, +180]
 		String direction = getDirection(yaw);
-		msgX += SPACE_WIDTH;
 		msgX += render(msgX, msgY, color, "[%-2s]", direction);  // Simple
 
 		// Line 2: Advanced HUD
 		msgX  = MARGIN_LEFT;
 		msgY += LINE_HEIGHT;
-		msgX += render(msgX, msgY, color, "[%-2s%+5.1f]", direction, angle);  // Advanced
+		msgX += render(msgX, msgY, color, "[%d %d %d]", pos.getX(), pos.getY(), pos.getZ());
+		msgX += render(msgX, msgY, color, "[%-2s %+6.1f]", direction, angle);
 	}
 
 	// Basic: render as-is, return string width
@@ -96,7 +96,9 @@ public class SimpleInfoHUD implements ModInitializer {
 		for (; i < arr.length - 1; i++) {
 			width += renderCore(x + width, y, rgb, arr[i]) + MONO_WIDTH;
 		}
-		return width + ((arr[i] == "") ? 0 : renderCore(x + width, y, rgb, arr[i]));
+		if (arr[i] != "")
+			width += renderCore(x + width, y, rgb, arr[i]) + SPACE_WIDTH;
+		return width;
 	}
 
 	public static String getDirection(float yaw) {
