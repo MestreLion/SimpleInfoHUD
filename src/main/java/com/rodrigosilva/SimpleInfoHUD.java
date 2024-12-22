@@ -30,6 +30,8 @@ public class SimpleInfoHUD implements ModInitializer {
 
 	// Helper constants
 	public static String[] DIRECTIONS = {"S", "SW", " W", "NW", "N", "NE", " E", "SE"};
+	public static int MONO_WIDTH  = 6;  // == CLIENT.textRenderer.getWidth​("W")
+	public static int SPACE_WIDTH = 4;  // == CLIENT.textRenderer.getWidth​(" ")
 
 	@Override
 	public void onInitialize() {
@@ -56,14 +58,45 @@ public class SimpleInfoHUD implements ModInitializer {
 		float yaw = entity.yaw;  // Not wrapped, full range of negative and positive angles
 		float angle = MathHelper.wrapDegrees(yaw);  // Yaw wrapped to [-180, +180]
 		String direction = getDirection(yaw);
+		msgX += SPACE_WIDTH;
 		msgX += render(msgX, msgY, color, "[%-2s]", direction);  // Simple
+
+		// Line 2: Advanced HUD
+		msgX  = MARGIN_LEFT;
+		msgY += LINE_HEIGHT;
 		msgX += render(msgX, msgY, color, "[%-2s%+5.1f]", direction, angle);  // Advanced
 	}
 
+	// Basic: render as-is, return string width
+	public static int renderCore(float x, float y, int rgb, String msg) {
+		CLIENT.textRenderer.drawWithShadow(MATRIX_STACK, msg, x, y, rgb);
+		return CLIENT.textRenderer.getWidth​(msg);
+	}
+
+	// Monospace: render each character individually, full-width
+	public static int renderMono(float x, float y, Color color, String format, Object... args) {
+		String msg = String.format(format, args);
+		int length = msg.length();
+		int rgb = color.getRGB();
+		for (int i = 0; i < length; i++) {
+			renderCore(x + i * MONO_WIDTH, y, rgb, msg.substring(i, i+1));
+		}
+		return length * MONO_WIDTH;
+	}
+
+	// "Smart" spacing: handle spaces as full-width, all other characters as-is
 	public static int render(float x, float y, Color color, String format, Object... args) {
 		String msg = String.format(format, args);
-		CLIENT.textRenderer.drawWithShadow(MATRIX_STACK, msg, x, y, color.getRGB());
-		return CLIENT.textRenderer.getWidth​(msg);
+		if (msg == "")
+			return 0;  // optional short-circuit
+		String[] arr = msg.split(" ", -1);
+		int width = 0;
+		int rgb = color.getRGB();
+		int i = 0;
+		for (; i < arr.length - 1; i++) {
+			width += renderCore(x + width, y, rgb, arr[i]) + MONO_WIDTH;
+		}
+		return width + ((arr[i] == "") ? 0 : renderCore(x + width, y, rgb, arr[i]));
 	}
 
 	public static String getDirection(float yaw) {
