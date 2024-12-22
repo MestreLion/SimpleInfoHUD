@@ -6,6 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.Color;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,6 +21,7 @@ public class SimpleInfoHUD implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 	public static final MinecraftClient CLIENT = MinecraftClient.getInstance();
 	public static MatrixStack MATRIX_STACK;
+	public static long WORLD_TICKS;
 
 	// Constants from the F3 Debug overlay, taken from Minecraft 1.17.1 at
 	// net.minecraft.client.gui.components.DebugScreenOverlay
@@ -32,6 +35,7 @@ public class SimpleInfoHUD implements ModInitializer {
 	public static String[] DIRECTIONS = {"S", "SW", " W", "NW", "N", "NE", " E", "SE"};
 	public static int MONO_WIDTH  = 6;  // == CLIENT.textRenderer.getWidth​("W")
 	public static int SPACE_WIDTH = 4;  // == CLIENT.textRenderer.getWidth​(" ")
+	public static int DAY_TICKS = 24000;  // https://minecraft.wiki/w/Daylight_cycle
 
 	@Override
 	public void onInitialize() {
@@ -39,6 +43,7 @@ public class SimpleInfoHUD implements ModInitializer {
 		// https://fabricmc.net/2023/05/25/120.html#screen-and-rendering-changes
 		HudRenderCallback.EVENT.register((matrices, tickDelta) -> {
 			MATRIX_STACK = matrices;
+			WORLD_TICKS = getWorldTicks();
 			mainSimpleInfoHUD();
 		});
 		LOGGER.info("[SimpleInfoHUD] Initialized");
@@ -64,7 +69,23 @@ public class SimpleInfoHUD implements ModInitializer {
 		msgX  = MARGIN_LEFT;
 		msgY += LINE_HEIGHT;
 		msgX += render(msgX, msgY, color, "[%d %d %d]", pos.getX(), pos.getY(), pos.getZ());
-		msgX += render(msgX, msgY, color, "[%-2s %+6.1f]", direction, angle);
+		msgX += render(msgX, msgY, color, "[%-2s%+6.1f]", direction, angle);
+
+		/* Reference: https://minecraft.wiki/w/Daylight_cycle
+		 * Day:  10:00 rl = 12000 ticks. Start 06:00 / 0
+		 * Dusk:  0:50 rl =  1000 ticks. Start 18:00 / 12000 (beds from  12542)
+		 * Night: 8:20 rl = 10000 ticks. Start 19:00 / 13000 (mobs 13188-22812‌)
+		 * Dawn:  0:50 rl =  1000 ticks. Start 05:00 / 23000 (beds until 23460)
+		 */
+		long ticks = WORLD_TICKS % DAY_TICKS;
+		Color timeColor = color;  // Day, default color
+		if      (ticks >= 23460) timeColor = Color.YELLOW;  // 05:27 Bed end, mob burn start
+		else if (ticks >= 22812) timeColor = Color.ORANGE;  // 04:48 Mob spawn end (clear weather)
+		else if (ticks >= 13188) timeColor = Color.RED;     // 19:11 Mob spawn start (clear weather)
+		else if (ticks >= 12542) timeColor = Color.ORANGE;  // 18:32 Bed start, mob burn end
+		else if (ticks >= 12000) timeColor = Color.YELLOW;  // 18:00 Dusk start
+		msgX += render(msgX, msgY, timeColor, "%s T%5d", getWorldTime(), ticks);
+		msgX += render(msgX, msgY, color, getRealTime());
 	}
 
 	// Basic: render as-is, return string width
@@ -107,5 +128,25 @@ public class SimpleInfoHUD implements ModInitializer {
 		if (angle < 0)
 			angle += 360;
 		return DIRECTIONS[angle / (360/zones)];
+	}
+
+	public static long getWorldTicks() {
+		/* Both getTimeOfDay() and getTime() are World "Age" in Ticks, neither wrapped to a day.
+		 * getTime() does not advance when you sleep in beds, so not in sync with day/night cycle.
+		 * Hence, getTimeOfDay() - getTime() == time "wasted" sleeping.
+		 */
+		return CLIENT.world.getTimeOfDay();  // CLIENT.level.getDayTime() in Minecraft 1.17+
+	}
+
+	public static String getWorldTime() {
+		int hours = 60;  // just a helper to make the expression below easier to read
+		long minutes = (6*hours + 24*hours * WORLD_TICKS / DAY_TICKS) % (24*hours);
+		return String.format("%02d:%02d", minutes / 60, minutes % 60);
+	}
+
+	public static String getRealTime() {
+		// By design it should show seconds, to easily tell apart from Minecraft World time
+		// locale-aware alternative: DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM)
+		return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 	}
 }
