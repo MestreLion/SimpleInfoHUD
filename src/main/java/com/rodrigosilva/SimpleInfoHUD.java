@@ -95,6 +95,9 @@ public class SimpleInfoHUD implements ModInitializer {
 
 		// Biome
 		msgX += render(msgX, msgY, color, getBiome(pos));
+
+		// FPS
+		msgX += render(msgX, msgY, color, "%d FPS", getFPS());
 	}
 
 	// Basic: render as-is, return string width
@@ -166,5 +169,9 @@ public class SimpleInfoHUD implements ModInitializer {
 				CLIENT.world.getBiome(pos)
 			)
 		));
+	}
+
+	public static int getFPS() {
+		return Integer.parseInt(CLIENT.fpsDebugString.split(" ", 2)[0]);  // Lame!
 	}
 }
