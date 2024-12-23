@@ -10,10 +10,13 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.entity.Entity;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.Util;
 
 
 public class SimpleInfoHUD implements ModInitializer {
@@ -71,7 +74,8 @@ public class SimpleInfoHUD implements ModInitializer {
 		msgX += render(msgX, msgY, color, "[%d %d %d]", pos.getX(), pos.getY(), pos.getZ());
 		msgX += render(msgX, msgY, color, "[%-2s%+6.1f]", direction, angle);
 
-		/* Reference: https://minecraft.wiki/w/Daylight_cycle
+		/* World Time
+		 * Reference: https://minecraft.wiki/w/Daylight_cycle
 		 * Day:  10:00 rl = 12000 ticks. Start 06:00 / 0
 		 * Dusk:  0:50 rl =  1000 ticks. Start 18:00 / 12000 (beds from  12542)
 		 * Night: 8:20 rl = 10000 ticks. Start 19:00 / 13000 (mobs 13188-22812‌)
@@ -85,7 +89,12 @@ public class SimpleInfoHUD implements ModInitializer {
 		else if (ticks >= 12542) timeColor = Color.ORANGE;  // 18:32 Bed start, mob burn end
 		else if (ticks >= 12000) timeColor = Color.YELLOW;  // 18:00 Dusk start
 		msgX += render(msgX, msgY, timeColor, "%s T%5d", getWorldTime(), ticks);
+
+		// Real Time
 		msgX += render(msgX, msgY, color, getRealTime());
+
+		// Biome
+		msgX += render(msgX, msgY, color, getBiome(pos));
 	}
 
 	// Basic: render as-is, return string width
@@ -148,5 +157,14 @@ public class SimpleInfoHUD implements ModInitializer {
 		// By design it should show seconds, to easily tell apart from Minecraft World time
 		// locale-aware alternative: DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM)
 		return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+	}
+
+	public static String getBiome(BlockPos pos) {
+		// I'm sure there are better ways to get the friendly biome name...
+		return I18n.translate(Util.createTranslationKey("biome",
+			CLIENT.world.getRegistryManager().get(Registry.BIOME_KEY).getId(
+				CLIENT.world.getBiome(pos)
+			)
+		));
 	}
 }
