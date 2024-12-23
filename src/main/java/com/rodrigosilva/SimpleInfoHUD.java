@@ -1,6 +1,6 @@
 package com.rodrigosilva;
 
-import net.fabricmc.api.ModInitializer;
+import net.fabricmc.api.ClientModInitializer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +19,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.Util;
 
 
-public class SimpleInfoHUD implements ModInitializer {
+public class SimpleInfoHUD implements ClientModInitializer {
 	public static final String MOD_ID = "simple-info-hud";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 	public static final MinecraftClient CLIENT = MinecraftClient.getInstance();
@@ -41,7 +41,7 @@ public class SimpleInfoHUD implements ModInitializer {
 	public static int DAY_TICKS = 24000;  // https://minecraft.wiki/w/Daylight_cycle
 
 	@Override
-	public void onInitialize() {
+	public void onInitializeClient() {
 		// Callback is (DrawContext context, float tickDelta) in Minecraft 1.20+
 		// https://fabricmc.net/2023/05/25/120.html#screen-and-rendering-changes
 		HudRenderCallback.EVENT.register((matrices, tickDelta) -> {
