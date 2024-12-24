@@ -75,21 +75,8 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		msgX += render(msgX, "[%d %3d %d]", pos.getX(), pos.getY(), pos.getZ());
 		msgX += render(msgX, "[%-2s%+6.1f]", direction, angle);
 
-		/* World Time
-		 * Reference: https://minecraft.wiki/w/Daylight_cycle
-		 * Day:  10:00 rl = 12000 ticks. Start 06:00 / 0
-		 * Dusk:  0:50 rl =  1000 ticks. Start 18:00 / 12000 (beds from  12542)
-		 * Night: 8:20 rl = 10000 ticks. Start 19:00 / 13000 (mobs 13188-22812‌)
-		 * Dawn:  0:50 rl =  1000 ticks. Start 05:00 / 23000 (beds until 23460)
-		 */
 		long ticks = WORLD_TICKS % DAY_TICKS;
-		Color timeColor = GREY;  // Day, default color
-		if      (ticks >= 23460) timeColor = Color.YELLOW;  // 05:27 Bed end, mob burn start
-		else if (ticks >= 22812) timeColor = Color.ORANGE;  // 04:48 Mob spawn end (clear weather)
-		else if (ticks >= 13188) timeColor = Color.RED;     // 19:11 Mob spawn start (clear weather)
-		else if (ticks >= 12542) timeColor = Color.ORANGE;  // 18:32 Bed start, mob burn end
-		else if (ticks >= 12000) timeColor = Color.YELLOW;  // 18:00 Dusk start
-		msgX += render(msgX, timeColor, "%s T%5d", getWorldTime(), ticks);
+		msgX += render(msgX, getWorldTimeColor(), "%s T%5d", getWorldTime(), ticks);
 
 		// Real Time
 		msgX += render(msgX, getRealTime());
@@ -228,10 +215,27 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		return CLIENT.world.getTimeOfDay();  // CLIENT.level.getDayTime() in Minecraft 1.17+
 	}
 
+	/* World Time
+	 * Reference: https://minecraft.wiki/w/Daylight_cycle
+	 * Day:  10:00 rl = 12000 ticks. Start 06:00 / 0
+	 * Dusk:  0:50 rl =  1000 ticks. Start 18:00 / 12000 (beds from  12542)
+	 * Night: 8:20 rl = 10000 ticks. Start 19:00 / 13000 (mobs 13188-22812‌)
+	 * Dawn:  0:50 rl =  1000 ticks. Start 05:00 / 23000 (beds until 23460)
+	 */
 	public static String getWorldTime() {
 		int hours = 60;  // just a helper to make the expression below easier to read
 		long minutes = (6*hours + 24*hours * WORLD_TICKS / DAY_TICKS) % (24*hours);
 		return String.format("%02d:%02d", minutes / 60, minutes % 60);
+	}
+
+	public static Color getWorldTimeColor() {
+		long ticks = WORLD_TICKS % DAY_TICKS;
+		if      (ticks >= 23460) return Color.YELLOW;  // 05:27 Bed end, mob burn start
+		else if (ticks >= 22812) return Color.ORANGE;  // 04:48 Mob spawn end (clear weather)
+		else if (ticks >= 13188) return Color.RED;     // 19:11 Mob spawn start (clear weather)
+		else if (ticks >= 12542) return Color.ORANGE;  // 18:32 Bed start, mob burn end
+		else if (ticks >= 12000) return Color.YELLOW;  // 18:00 Dusk start
+		return GREY;
 	}
 
 	public static String getRealTime() {
