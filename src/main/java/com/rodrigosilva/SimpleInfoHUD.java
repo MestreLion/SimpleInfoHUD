@@ -57,26 +57,23 @@ public class SimpleInfoHUD implements ClientModInitializer {
 	}
 
 	public static final void mainSimpleInfoHUD() {
-		float msgX = MARGIN_LEFT;
-		float msgY = MARGIN_TOP + DEBUG_HEIGHT;
-		Color color = GREY;  // Default F3 color, almost white
+		int msgX = 0;
 
 		// Player Position
 		Entity entity = CLIENT.getCameraEntity();
 		BlockPos pos = entity.getBlockPos();
-		msgX += render(msgX, msgY, color, "[%d %3d %d]", pos.getX(), pos.getY(), pos.getZ());
+		msgX += render(1, msgX, "[%d %3d %d]", pos.getX(), pos.getY(), pos.getZ());
 
 		// Player Direction
 		float yaw = entity.yaw;  // Not wrapped, full range of negative and positive angles
 		float angle = MathHelper.wrapDegrees(yaw);  // Yaw wrapped to [-180, +180]
 		String direction = getDirection(yaw);
-		msgX += render(msgX, msgY, color, "[%-2s]", direction);  // Simple
+		msgX += render(1, msgX, "[%-2s]", direction);  // Simple
 
 		// Line 2: Advanced HUD
-		msgX  = MARGIN_LEFT;
-		msgY += LINE_HEIGHT;
-		msgX += render(msgX, msgY, color, "[%d %3d %d]", pos.getX(), pos.getY(), pos.getZ());
-		msgX += render(msgX, msgY, color, "[%-2s%+6.1f]", direction, angle);
+		msgX = 0;
+		msgX += render(msgX, "[%d %3d %d]", pos.getX(), pos.getY(), pos.getZ());
+		msgX += render(msgX, "[%-2s%+6.1f]", direction, angle);
 
 		/* World Time
 		 * Reference: https://minecraft.wiki/w/Daylight_cycle
@@ -86,22 +83,22 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		 * Dawn:  0:50 rl =  1000 ticks. Start 05:00 / 23000 (beds until 23460)
 		 */
 		long ticks = WORLD_TICKS % DAY_TICKS;
-		Color timeColor = color;  // Day, default color
+		Color timeColor = GREY;  // Day, default color
 		if      (ticks >= 23460) timeColor = Color.YELLOW;  // 05:27 Bed end, mob burn start
 		else if (ticks >= 22812) timeColor = Color.ORANGE;  // 04:48 Mob spawn end (clear weather)
 		else if (ticks >= 13188) timeColor = Color.RED;     // 19:11 Mob spawn start (clear weather)
 		else if (ticks >= 12542) timeColor = Color.ORANGE;  // 18:32 Bed start, mob burn end
 		else if (ticks >= 12000) timeColor = Color.YELLOW;  // 18:00 Dusk start
-		msgX += render(msgX, msgY, timeColor, "%s T%5d", getWorldTime(), ticks);
+		msgX += render(msgX, timeColor, "%s T%5d", getWorldTime(), ticks);
 
 		// Real Time
-		msgX += render(msgX, msgY, color, getRealTime());
+		msgX += render(msgX, getRealTime());
 
 		// Biome
-		msgX += render(msgX, msgY, color, getBiome(pos));
+		msgX += render(msgX, getBiome(pos));
 
 		// FPS
-		msgX += render(msgX, msgY, color, "%d FPS", getFPS());
+		msgX += render(msgX, "%d FPS", getFPS());
 	}
 
 	public static int fill_background(float x, float y, int width) {
@@ -119,7 +116,10 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		return width;
 	}
 
-	// Basic: render as-is, return string width
+	/* Basic API: render string as-is at (x, y) with color.
+	 * Automatically scale font size and add semi-transparent background.
+	 * Return string width
+	 */
 	public static int renderCore(float x, float y, int rgb, String msg) {
 		int width = CLIENT.textRenderer.getWidth​(msg);
 		fill_background(x, y, width);
@@ -135,25 +135,50 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		return width;
 	}
 
-	// Monospace: render each character individually, full-width
-	public static int renderMono(float x, float y, Color color, String format, Object... args) {
+	/* Higher level render API:
+	 * - Line number instead of raw y
+	 * - Color object instead of raw ARGB
+	 * - Built-in String formatting using optional args
+	 * - Use left margin if rendering at x=0
+	 * - Monospace: render each character individually, full-width
+	 * Return rendered text width, including added margin, if any.
+	 */
+	public static int renderMono(int line, float x, Color color, String format, Object... args) {
 		String msg = String.format(format, args);
 		int length = msg.length();
 		int rgb = color.getRGB();
+		float y = MARGIN_TOP + DEBUG_HEIGHT + line * LINE_HEIGHT;
+		int margin = 0;
+		if (x == 0)
+			margin = MARGIN_LEFT;
 		for (int i = 0; i < length; i++) {
-			renderCore(x + i * MONO_WIDTH, y, rgb, msg.substring(i, i+1));
+			float posX = margin + x + i * MONO_WIDTH;
+			int width = renderCore(posX, y, rgb, msg.substring(i, i+1));
+			if (width != MONO_WIDTH)
+				fill_background(posX + width, y, MONO_WIDTH - width);
 		}
-		return length * MONO_WIDTH;
+		return margin + length * MONO_WIDTH;
 	}
 
-	// "Smart" spacing: handle spaces as full-width, all other characters as-is
-	public static int render(float x, float y, Color color, String format, Object... args) {
+	/* Highest level render API:
+	 * - Smart spacing: handle spaces as full-width, all other characters as-is
+	 * - Add a leading regular-width space if at left margin and formatted string is not empty
+	 * - Add a trailing regular-width space, unless formatted string is empty or
+	 *   already contains a trailing space (which will be rendered as full-width)
+	 * Return rendered text width, including added margin, leading and trailing spaces, if any.
+	 */
+	public static int render(int line, float x, Color color, String format, Object... args) {
 		String msg = String.format(format, args);
 		if (msg == "")
-			return 0;  // optional short-circuit
+			return 0;  // short-circuit
 		String[] arr = msg.split(" ", -1);
-		int width = 0;
 		int rgb = color.getRGB();
+		float y = MARGIN_TOP + DEBUG_HEIGHT + line * LINE_HEIGHT;
+		int width = 0;
+		if (x == 0 || x == MARGIN_LEFT) {
+			width += MARGIN_LEFT;  // Add margin (no fill)
+			width += fill_background(width, y, SPACE_WIDTH);  // leading space
+		}
 		int i = 0;
 		for (; i < arr.length - 1; i++) {
 			width += renderCore(x + width, y, rgb, arr[i]);
@@ -161,9 +186,21 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		}
 		if (arr[i] != "") {
 			width += renderCore(x + width, y, rgb, arr[i]);
-			width += fill_background(x + width, y, SPACE_WIDTH);
+			width += fill_background(x + width, y, SPACE_WIDTH);  // trailing space
 		}
 		return width;
+	}
+	// No line, draw on first (line 0)
+	public static int render(float x, Color color, String format, Object... args) {
+		return render(0, x, color, format, args);
+	}
+	// No color, use default (GREY)
+	public static int render(int line, float x, String format, Object... args) {
+		return render(line, x, GREY, format, args);
+	}
+	// No line nor color
+	public static int render(float x, String format, Object... args) {
+		return render(0, x, GREY, format, args);
 	}
 
 	public static float getDebugHeight() {
