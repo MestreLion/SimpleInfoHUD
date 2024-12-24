@@ -88,6 +88,10 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		msgX += render(msgX, "%d FPS", getFPS());
 	}
 
+	/**********************************************************************
+	 * Rendering / drawing methods
+	 **********************************************************************/
+
 	public static int fill_background(float x, float y, int width) {
 		MATRIX_STACK.push();
 		MATRIX_STACK.scale(SCALE, SCALE, SCALE);
@@ -190,10 +194,14 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		return render(0, x, GREY, format, args);
 	}
 
+	/**********************************************************************
+	 * Minecraft data fetching methods
+	 **********************************************************************/
+
+	/* F3 Debug Info text height, considering scale, enabled and "Reduced Debug Info"
+	 * In Minecraft 1.16.4: 26 lines (13 if reduced) + 1 blank line
+	 */
 	public static float getDebugHeight() {
-		/* F3 Debug Info text height, considering scale, enabled and "Reduced Debug Info"
-		 * In Minecraft 1.16.4: 26 lines (13 if reduced) + 1 blank line
-		 */
 		if (!CLIENT.options.debugEnabled)
 			return 0;
 		return (CLIENT.options.reducedDebugInfo ? 14 : 27) * LINE_HEIGHT / SCALE;
