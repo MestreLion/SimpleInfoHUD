@@ -38,6 +38,7 @@ public class SimpleInfoHUD implements ClientModInitializer {
 	public static int MONO_WIDTH  = 6;  // == CLIENT.textRenderer.getWidth​("W")
 	public static int SPACE_WIDTH = 4;  // == CLIENT.textRenderer.getWidth​(" ")
 	public static int DAY_TICKS = 24000;  // https://minecraft.wiki/w/Daylight_cycle
+	public static float SCALE = 0.8f;  // Text scale
 	public static float DEBUG_HEIGHT;  // F3 Debug info height
 
 	@Override
@@ -104,8 +105,12 @@ public class SimpleInfoHUD implements ClientModInitializer {
 
 	// Basic: render as-is, return string width
 	public static int renderCore(float x, float y, int rgb, String msg) {
+		MATRIX_STACK.push();
+		MATRIX_STACK.scale(SCALE, SCALE, SCALE);
+		int width = CLIENT.textRenderer.getWidth​(msg);
 		CLIENT.textRenderer.drawWithShadow(MATRIX_STACK, msg, x, y, rgb);
-		return CLIENT.textRenderer.getWidth​(msg);
+		MATRIX_STACK.pop();
+		return width;
 	}
 
 	// Monospace: render each character individually, full-width
@@ -137,12 +142,12 @@ public class SimpleInfoHUD implements ClientModInitializer {
 	}
 
 	public static float getDebugHeight() {
-		/* F3 Debug Info text height, considering if enabled and "Reduced Debug Info"
+		/* F3 Debug Info text height, considering scale, enabled and "Reduced Debug Info"
 		 * In Minecraft 1.16.4: 26 lines (13 if reduced) + 1 blank line
 		 */
 		if (!CLIENT.options.debugEnabled)
 			return 0;
-		return (CLIENT.options.reducedDebugInfo ? 14 : 27) * LINE_HEIGHT;
+		return (CLIENT.options.reducedDebugInfo ? 14 : 27) * LINE_HEIGHT / SCALE;
 	}
 
 	public static String getDirection(float yaw) {
