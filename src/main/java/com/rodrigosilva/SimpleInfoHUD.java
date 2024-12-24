@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -29,6 +30,7 @@ public class SimpleInfoHUD implements ClientModInitializer {
 	// Constants from the F3 Debug overlay, taken from Minecraft 1.17.1 at
 	// net.minecraft.client.gui.components.DebugScreenOverlay
 	private static final Color GREY = new Color(0xE0E0E0);  // int COLOR_GREY = 14737632;
+	private static final int BACKGROUND = 0x90505050;  // −1873784752
 	private static final int LINE_HEIGHT = 9;  // int j = 9;
 	private static final int MARGIN_LEFT = 2;
 	private static final int MARGIN_TOP = 2;
@@ -38,7 +40,7 @@ public class SimpleInfoHUD implements ClientModInitializer {
 	public static int MONO_WIDTH  = 6;  // == CLIENT.textRenderer.getWidth​("W")
 	public static int SPACE_WIDTH = 4;  // == CLIENT.textRenderer.getWidth​(" ")
 	public static int DAY_TICKS = 24000;  // https://minecraft.wiki/w/Daylight_cycle
-	public static float SCALE = 0.8f;  // Text scale
+	public static float SCALE = 0.75f;  // Text scale
 	public static float DEBUG_HEIGHT;  // F3 Debug info height
 
 	@Override
@@ -69,7 +71,6 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		float angle = MathHelper.wrapDegrees(yaw);  // Yaw wrapped to [-180, +180]
 		String direction = getDirection(yaw);
 		msgX += render(msgX, msgY, color, "[%-2s]", direction);  // Simple
-
 
 		// Line 2: Advanced HUD
 		msgX  = MARGIN_LEFT;
@@ -103,11 +104,26 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		msgX += render(msgX, msgY, color, "%d FPS", getFPS());
 	}
 
-	// Basic: render as-is, return string width
-	public static int renderCore(float x, float y, int rgb, String msg) {
+	public static void fill_background(float x, float y, int width) {
 		MATRIX_STACK.push();
 		MATRIX_STACK.scale(SCALE, SCALE, SCALE);
+		DrawableHelper.fill(
+			MATRIX_STACK,
+			(int)x,
+			(int)y      - 1,
+			(int)x      + width,
+			(int)y      + LINE_HEIGHT,
+			BACKGROUND
+		);
+		MATRIX_STACK.pop();
+	}
+
+	// Basic: render as-is, return string width
+	public static int renderCore(float x, float y, int rgb, String msg) {
 		int width = CLIENT.textRenderer.getWidth​(msg);
+		fill_background(x, y, width);
+		MATRIX_STACK.push();
+		MATRIX_STACK.scale(SCALE, SCALE, SCALE);
 		CLIENT.textRenderer.drawWithShadow(MATRIX_STACK, msg, x, y, rgb);
 		MATRIX_STACK.pop();
 		return width;
