@@ -32,13 +32,13 @@ public class SimpleInfoHUD implements ClientModInitializer {
 	private static final int LINE_HEIGHT = 9;  // int j = 9;
 	private static final int MARGIN_LEFT = 2;
 	private static final int MARGIN_TOP = 2;
-	private static final int DEBUG_HEIGHT = 27 * LINE_HEIGHT;  // 26 lines in 1.16.4 + 1 blank
 
 	// Helper constants
 	public static String[] DIRECTIONS = {"S", "SW", " W", "NW", "N", "NE", " E", "SE"};
 	public static int MONO_WIDTH  = 6;  // == CLIENT.textRenderer.getWidth​("W")
 	public static int SPACE_WIDTH = 4;  // == CLIENT.textRenderer.getWidth​(" ")
 	public static int DAY_TICKS = 24000;  // https://minecraft.wiki/w/Daylight_cycle
+	public static float DEBUG_HEIGHT;  // F3 Debug info height
 
 	@Override
 	public void onInitializeClient() {
@@ -47,6 +47,7 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		HudRenderCallback.EVENT.register((matrices, tickDelta) -> {
 			MATRIX_STACK = matrices;
 			WORLD_TICKS = getWorldTicks();
+			DEBUG_HEIGHT = getDebugHeight();
 			mainSimpleInfoHUD();
 		});
 		LOGGER.info("[SimpleInfoHUD] Initialized");
@@ -54,13 +55,13 @@ public class SimpleInfoHUD implements ClientModInitializer {
 
 	public static final void mainSimpleInfoHUD() {
 		float msgX = MARGIN_LEFT;
-		float msgY = MARGIN_TOP + (CLIENT.options.debugEnabled ? DEBUG_HEIGHT : 0);
+		float msgY = MARGIN_TOP + DEBUG_HEIGHT;
 		Color color = GREY;  // Default F3 color, almost white
 
 		// Player Position
 		Entity entity = CLIENT.getCameraEntity();
 		BlockPos pos = entity.getBlockPos();
-		msgX += render(msgX, msgY, color, "[%d %d %d]", pos.getX(), pos.getY(), pos.getZ());
+		msgX += render(msgX, msgY, color, "[%d %3d %d]", pos.getX(), pos.getY(), pos.getZ());
 
 		// Player Direction
 		float yaw = entity.yaw;  // Not wrapped, full range of negative and positive angles
@@ -68,10 +69,11 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		String direction = getDirection(yaw);
 		msgX += render(msgX, msgY, color, "[%-2s]", direction);  // Simple
 
+
 		// Line 2: Advanced HUD
 		msgX  = MARGIN_LEFT;
 		msgY += LINE_HEIGHT;
-		msgX += render(msgX, msgY, color, "[%d %d %d]", pos.getX(), pos.getY(), pos.getZ());
+		msgX += render(msgX, msgY, color, "[%d %3d %d]", pos.getX(), pos.getY(), pos.getZ());
 		msgX += render(msgX, msgY, color, "[%-2s%+6.1f]", direction, angle);
 
 		/* World Time
@@ -132,6 +134,15 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		if (arr[i] != "")
 			width += renderCore(x + width, y, rgb, arr[i]) + SPACE_WIDTH;
 		return width;
+	}
+
+	public static float getDebugHeight() {
+		/* F3 Debug Info text height, considering if enabled and "Reduced Debug Info"
+		 * In Minecraft 1.16.4: 26 lines (13 if reduced) + 1 blank line
+		 */
+		if (!CLIENT.options.debugEnabled)
+			return 0;
+		return (CLIENT.options.reducedDebugInfo ? 14 : 27) * LINE_HEIGHT;
 	}
 
 	public static String getDirection(float yaw) {
