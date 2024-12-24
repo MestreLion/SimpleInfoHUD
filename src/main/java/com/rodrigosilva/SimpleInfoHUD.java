@@ -125,7 +125,12 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		fill_background(x, y, width);
 		MATRIX_STACK.push();
 		MATRIX_STACK.scale(SCALE, SCALE, SCALE);
-		CLIENT.textRenderer.drawWithShadow(MATRIX_STACK, msg, x, y, rgb);
+		int x1 = CLIENT.textRenderer.drawWithShadow(MATRIX_STACK, msg, x, y, rgb);
+		if (x1 != (int)x + width + 1)
+			LOGGER.warn(String.format(
+				"[%s] renderCore() mismatch: %d != %d + %d + 1",
+				MOD_ID, x1, (int)x, width
+			));
 		MATRIX_STACK.pop();
 		return width;
 	}
