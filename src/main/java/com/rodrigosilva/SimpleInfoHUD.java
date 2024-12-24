@@ -104,7 +104,7 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		msgX += render(msgX, msgY, color, "%d FPS", getFPS());
 	}
 
-	public static void fill_background(float x, float y, int width) {
+	public static int fill_background(float x, float y, int width) {
 		MATRIX_STACK.push();
 		MATRIX_STACK.scale(SCALE, SCALE, SCALE);
 		DrawableHelper.fill(
@@ -116,6 +116,7 @@ public class SimpleInfoHUD implements ClientModInitializer {
 			BACKGROUND
 		);
 		MATRIX_STACK.pop();
+		return width;
 	}
 
 	// Basic: render as-is, return string width
@@ -150,10 +151,13 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		int rgb = color.getRGB();
 		int i = 0;
 		for (; i < arr.length - 1; i++) {
-			width += renderCore(x + width, y, rgb, arr[i]) + MONO_WIDTH;
+			width += renderCore(x + width, y, rgb, arr[i]);
+			width += fill_background(x + width, y, MONO_WIDTH);
 		}
-		if (arr[i] != "")
-			width += renderCore(x + width, y, rgb, arr[i]) + SPACE_WIDTH;
+		if (arr[i] != "") {
+			width += renderCore(x + width, y, rgb, arr[i]);
+			width += fill_background(x + width, y, SPACE_WIDTH);
+		}
 		return width;
 	}
 
