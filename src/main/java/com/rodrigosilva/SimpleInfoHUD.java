@@ -54,8 +54,8 @@ public class SimpleInfoHUD implements ClientModInitializer {
 	public static MatrixStack MATRIX_STACK;  // Transformation matrices, for scaling and such
 	public static long WORLD_TICKS;  // Un-wrapped World "Age", in ticks
 	public static float DEBUG_HEIGHT;  // F3 Debug info height
-	public static boolean show;
-	public static boolean showAdvanced;
+	public static boolean show = true;
+	public static boolean showAdvanced = false;
 
 	@Override
 	public void onInitializeClient() {
@@ -81,7 +81,7 @@ public class SimpleInfoHUD implements ClientModInitializer {
 			MATRIX_STACK = matrices;
 			WORLD_TICKS = getWorldTicks();
 			DEBUG_HEIGHT = getDebugHeight();
-			show = showKeyBinding.isPressed();
+			show = ! showKeyBinding.isPressed();  // cheat to enable by default
 			showAdvanced = advancedKeyBinding.isPressed();
 
 			if (show)
