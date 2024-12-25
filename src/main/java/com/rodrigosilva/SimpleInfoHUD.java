@@ -112,7 +112,7 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		}
 
 		// Advanced HUD
-		msgX += render(msgX, "[%-2s%+6.1f]", direction, angle);
+		msgX += render(msgX, "[%-2s %+6.1f°]", direction, angle);
 
 		// Minecraft World Time
 		long ticks = WORLD_TICKS % DAY_TICKS;

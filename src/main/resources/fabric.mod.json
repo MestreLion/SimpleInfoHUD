@@ -3,7 +3,7 @@
 	"id": "simple-info-hud",
 	"version": "${version}",
 	"name": "Simple Info HUD",
-	"description": "Displays useful info in an unobtrusive way ",
+	"description": "Displays useful info in an unobtrusive way",
 	"authors": [ "MestreLion" ],
 	"contact": {
 		"homepage": "https://github.com/MestreLion/SimpleInfoHUD",
