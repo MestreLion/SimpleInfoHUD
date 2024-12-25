@@ -19,13 +19,17 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.Util;
 
+import org.lwjgl.glfw.GLFW;
+import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.options.StickyKeyBinding;
+import net.minecraft.client.util.InputUtil;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+
 
 public class SimpleInfoHUD implements ClientModInitializer {
 	public static final String MOD_ID = "simple-info-hud";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 	public static final MinecraftClient CLIENT = MinecraftClient.getInstance();
-	public static MatrixStack MATRIX_STACK;
-	public static long WORLD_TICKS;
 
 	// Constants from the F3 Debug overlay, taken from Minecraft 1.17.1 at
 	// net.minecraft.client.gui.components.DebugScreenOverlay
@@ -41,17 +45,47 @@ public class SimpleInfoHUD implements ClientModInitializer {
 	public static int SPACE_WIDTH = 4;  // == CLIENT.textRenderer.getWidth​(" ")
 	public static int DAY_TICKS = 24000;  // https://minecraft.wiki/w/Daylight_cycle
 	public static float SCALE = 0.75f;  // Text scale
+
+	// Set on (client) initialization
+	private static KeyBinding showKeyBinding;
+	private static KeyBinding advancedKeyBinding;
+
+	// Set on HudRender callback, before mainSimpleInfoHUD() call
+	public static MatrixStack MATRIX_STACK;  // Transformation matrices, for scaling and such
+	public static long WORLD_TICKS;  // Un-wrapped World "Age", in ticks
 	public static float DEBUG_HEIGHT;  // F3 Debug info height
+	public static boolean show;
+	public static boolean showAdvanced;
 
 	@Override
 	public void onInitializeClient() {
+		KeyBinding showKeyBinding = KeyBindingHelper.registerKeyBinding(
+			new StickyKeyBinding(
+				String.format("key.%s.show", MOD_ID),
+				GLFW.GLFW_KEY_F4,
+				String.format("key.category.%s", MOD_ID),
+				() -> true
+			)
+		);
+		KeyBinding advancedKeyBinding = KeyBindingHelper.registerKeyBinding(
+			new KeyBinding(
+				String.format("key.%s.advanced", MOD_ID),
+				InputUtil.Type.KEYSYM,
+				GLFW.GLFW_KEY_LEFT_ALT,
+				String.format("key.category.%s", MOD_ID)
+			)
+		);
 		// Callback is (DrawContext context, float tickDelta) in Minecraft 1.20+
 		// https://fabricmc.net/2023/05/25/120.html#screen-and-rendering-changes
 		HudRenderCallback.EVENT.register((matrices, tickDelta) -> {
 			MATRIX_STACK = matrices;
 			WORLD_TICKS = getWorldTicks();
 			DEBUG_HEIGHT = getDebugHeight();
-			mainSimpleInfoHUD();
+			show = showKeyBinding.isPressed();
+			showAdvanced = advancedKeyBinding.isPressed();
+
+			if (show)
+				mainSimpleInfoHUD();
 		});
 		LOGGER.info("[SimpleInfoHUD] Initialized");
 	}
@@ -62,19 +96,25 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		// Player Position
 		Entity entity = CLIENT.getCameraEntity();
 		BlockPos pos = entity.getBlockPos();
-		msgX += render(1, msgX, "[%d %3d %d]", pos.getX(), pos.getY(), pos.getZ());
 
 		// Player Direction
 		float yaw = entity.yaw;  // Not wrapped, full range of negative and positive angles
 		float angle = MathHelper.wrapDegrees(yaw);  // Yaw wrapped to [-180, +180]
 		String direction = getDirection(yaw);
-		msgX += render(1, msgX, "[%-2s]", direction);  // Simple
 
-		// Line 2: Advanced HUD
-		msgX = 0;
-		msgX += render(msgX, "[%d %3d %d]", pos.getX(), pos.getY(), pos.getZ());
+		// Common HUD (Player Position)
+		msgX += render(msgX, "[%3d %3d %3d]", pos.getX(), pos.getY(), pos.getZ());
+
+		if (!showAdvanced) {
+			// Simple HUD (Direction)
+			msgX += render(msgX, "[%-2s]", direction);  // Simple
+			return;
+		}
+
+		// Advanced HUD
 		msgX += render(msgX, "[%-2s%+6.1f]", direction, angle);
 
+		// Minecraft World Time
 		long ticks = WORLD_TICKS % DAY_TICKS;
 		msgX += render(msgX, getWorldTimeColor(), "%s T%5d", getWorldTime(), ticks);
 
