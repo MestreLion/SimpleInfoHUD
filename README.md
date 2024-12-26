@@ -1,9 +1,9 @@
 Simple Info HUD
 ===============
 
-Minecraft client-side mod of a simple HUD that displays coordinates, facing direction, in-game time and other info.
+Minecraft client-side mod for a simple HUD (Heads-on-Display) that shows coordinates, facing direction, world time and other in-game information in a consise format.
 
-Designed to be an unbtrusive version of the F3 Debug screen, offering more useful information in a single line.
+Designed to be an unbtrusive version of the F3 Debug screen, offering useful info in a single line.
 
 Brief summary of the information displayed:
 
@@ -15,10 +15,11 @@ Brief summary of the information displayed:
 
 Valuable information in very little screen area!
 
-Currently supports only Minecraft 1.16.4/1.16.5, as it was (re-)created for using in [Skyblock 2.1](https://skyblock.net/).
-Support for all major versions up to latest is planned.
+> [!NOTE]
+> - Requires [Fabric](https://fabricmc.net/) and [Fabric API](https://modrinth.com/mod/fabric-api)
+> - Currently supports only Minecraft 1.16.4/1.16.5, as it was (re-)created for using in [Skyblock 2.1](https://skyblock.net/).
+>   Support for all major versions up to latest is planned.
 
-*Requires [Fabric](https://fabricmc.net/) and [Fabric API](https://modrinth.com/mod/fabric-api)
 
 
 Usage and details
@@ -30,11 +31,11 @@ Usage and details
 - Facing direction: `N`orth, `S`outh, `W`est, `E`ast, `NW`, `NE`, `SW`, `SE`.
 - World time, in `HH:MM` format. To match the [clock](https://minecraft.wiki/w/Clock) item, [day starts at 6AM](https://minecraft.wiki/w/Daylight_cycle).
   Colors indicate some events during the sunset (dusk), night, and sunrise (dawn):
-  - <span style="color:yellow">**`18:00`**: Daytime ends and Sunset begins, Villagers go to their beds and sleep</span>
-  - <span style="color:orange">**`18:32`**: Beds can be used and undead mobs no longer burn</span>
-  - <span style="color:red"   >**`19:11`**: Hostile mobs start spawning outdoors</span>
-  - <span style="color:orange">**`04:48`**: Hostile mobs stop spawning outdoors</span>
-  - <span style="color:yellow">**`05:27`**: Beds can no longer be used, undead mobs begin to burn</span>
+  - **`18:00`**: Daytime ends and Sunset begins, Villagers go to their beds and sleep
+  - **`18:32`**: Beds can be used and undead mobs no longer burn
+  - **`19:11`**: Hostile mobs start spawning outdoors
+  - **`04:48`**: Hostile mobs stop spawning outdoors
+  - **`05:27`**: Beds can no longer be used, undead mobs begin to burn
   - **`06:00`**: Sunrise ends and Daytime begins, Players and Villagers awaken and rise from their beds
   - The above timestamps are for clear/sunny weather.
     Rains and Thunderstorms extend bed usage, hostile mob spawning and no burning periods, so they start earlier and end later.
