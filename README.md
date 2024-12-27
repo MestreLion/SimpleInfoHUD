@@ -61,12 +61,17 @@ Installation
 
 #### Using a pre-built `jar`:
 - [Install Fabric Loader](https://docs.fabricmc.net/players/installing-fabric) in your Minecraft instance.
-- Download the mod for your Minecraft version. Releases are found on [Github Releases](./releases), [Modrinth](https://modrinth.com/mod/simple-info-hud), and on [Curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-info-hud).
-- Save the downloaded `.jar` file in the `mods` folder of your Minecraft instance, by default `~/.minecraft` in Linux and `%APPDATA%/.mineraft` in Windows
+- Download the mod for your Minecraft version. Releases are found on
+  [Github Releases](https://github.com/MestreLion/SimpleInfoHUD/releases),
+  [Modrinth](https://modrinth.com/mod/simple-info-hud), and on
+  [Curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-info-hud).
+- Save the downloaded `.jar` file in the `mods` folder of your Minecraft instance,
+  by default `~/.minecraft` in Linux and `%APPDATA%/.mineraft` in Windows
   if you're using the official Minecraft Launcher from Microsoft.
 - Similar instructions can be found in this Fabric [tutorial](https://docs.fabricmc.net/players/installing-mods)
 - _Note: Besides the Fabric Loader itself, this mod **requires** the [Fabric API Mod](https://modrinth.com/mod/fabric-api)_,
-  also available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fabric-api) and [GitHub Releases](https://github.com/FabricMC/fabric/releases),
+  also available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fabric-api) and
+  [GitHub Releases](https://github.com/FabricMC/fabric/releases),
   so repeat the above steps for it.
 - All the above can be greatly simplified using a launcher such as [Prism Launcher](https://prismlauncher.org/)
 
