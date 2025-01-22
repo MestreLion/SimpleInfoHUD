@@ -48,7 +48,8 @@ public class SimpleInfoHUD implements ClientModInitializer {
 	public static enum State {
 		DISABLED,
 		SIMPLE,
-		ADVANCED;
+		ADVANCED,
+		FULL;
 
 		// Enum optimization, taken from https://stackoverflow.com/a/76006044/624066
 		public static final State[] values = State.values();
@@ -113,21 +114,26 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		// Advanced HUD
 		msgX += render(msgX, "[%-2s %+6.1f°]", direction, angle);
 
-		// Minecraft World Time
-		long day = WORLD_TICKS / DAY_TICKS;
-		long ticks = WORLD_TICKS % DAY_TICKS;
-		msgX += render(
-			msgX, getWorldTimeColor(), "Day %d %s T%5d", day, getWorldTime(), ticks
-		);
+		// Minecraft World Day and Time
+		Color time_color = getWorldTimeColor();
+		msgX += render(msgX, "Day %d", WORLD_TICKS / DAY_TICKS);
+		msgX += render(msgX, time_color, "%s", getWorldTime());
+		if (state == State.FULL) {
+			msgX += render(msgX, time_color, "T%5d", WORLD_TICKS % DAY_TICKS);
+		}
 
 		// Real Time
-		msgX += render(msgX, getRealTime());
+		if (state == State.FULL) {
+			msgX += render(msgX, getRealTime());
+		}
 
 		// Biome
 		msgX += render(msgX, getBiome(pos));
 
 		// FPS
-		msgX += render(msgX, "%d FPS", getFPS());
+		if (state == State.FULL) {
+			msgX += render(msgX, "%d FPS", getFPS());
+		}
 	}
 
 	/**********************************************************************
