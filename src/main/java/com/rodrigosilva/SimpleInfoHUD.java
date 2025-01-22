@@ -45,33 +45,32 @@ public class SimpleInfoHUD implements ClientModInitializer {
 	public static int SPACE_WIDTH = 4;  // == CLIENT.textRenderer.getWidth​(" ")
 	public static int DAY_TICKS = 24000;  // https://minecraft.wiki/w/Daylight_cycle
 	public static float SCALE = 0.75f;  // Text scale
+	public static enum State {
+		DISABLED,
+		SIMPLE,
+		ADVANCED;
+
+		// Enum optimization, taken from https://stackoverflow.com/a/76006044/624066
+		public static final State[] values = State.values();
+		public static final int size = values.length;
+	}
 
 	// Set on (client) initialization
-	private static KeyBinding showKeyBinding;
-	private static KeyBinding advancedKeyBinding;
+	private static KeyBinding stateKeyBinding;
 
 	// Set on HudRender callback, before mainSimpleInfoHUD() call
 	public static MatrixStack MATRIX_STACK;  // Transformation matrices, for scaling and such
 	public static long WORLD_TICKS;  // Un-wrapped World "Age", in ticks
 	public static float DEBUG_HEIGHT;  // F3 Debug info height
-	public static boolean show = true;
-	public static boolean showAdvanced = false;
+	public static State state = State.SIMPLE;
 
 	@Override
 	public void onInitializeClient() {
-		KeyBinding showKeyBinding = KeyBindingHelper.registerKeyBinding(
-			new StickyKeyBinding(
-				String.format("key.%s.show", MOD_ID),
-				GLFW.GLFW_KEY_F4,
-				String.format("key.category.%s", MOD_ID),
-				() -> true
-			)
-		);
-		KeyBinding advancedKeyBinding = KeyBindingHelper.registerKeyBinding(
+		KeyBinding stateKeyBinding = KeyBindingHelper.registerKeyBinding(
 			new KeyBinding(
-				String.format("key.%s.advanced", MOD_ID),
+				String.format("key.%s.state", MOD_ID),
 				InputUtil.Type.KEYSYM,
-				GLFW.GLFW_KEY_LEFT_ALT,
+				GLFW.GLFW_KEY_F4,
 				String.format("key.category.%s", MOD_ID)
 			)
 		);
@@ -81,10 +80,10 @@ public class SimpleInfoHUD implements ClientModInitializer {
 			MATRIX_STACK = matrices;
 			WORLD_TICKS = getWorldTicks();
 			DEBUG_HEIGHT = getDebugHeight();
-			show = ! showKeyBinding.isPressed();  // cheat to enable by default
-			showAdvanced = advancedKeyBinding.isPressed();
-
-			if (show)
+			while (stateKeyBinding.wasPressed()) {
+				state = State.values[(state.ordinal() + 1) % State.size];
+			}
+			if (state != State.DISABLED)
 				mainSimpleInfoHUD();
 		});
 		LOGGER.info("[SimpleInfoHUD] Initialized");
@@ -105,7 +104,7 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		// Common HUD (Player Position)
 		msgX += render(msgX, "[%3d %3d %3d]", pos.getX(), pos.getY(), pos.getZ());
 
-		if (!showAdvanced) {
+		if (state == State.SIMPLE) {
 			// Simple HUD (Direction)
 			msgX += render(msgX, "[%-2s]", direction);  // Simple
 			return;

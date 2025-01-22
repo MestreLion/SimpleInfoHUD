@@ -1,5 +1,4 @@
 {
 	"key.category.simple-info-hud": "Mod Simple Info HUD",
-	"key.simple-info-hud.show": "Exibir (ativar/desativar mod)",
-	"key.simple-info-hud.advanced": "Exibir informações avançadas"
+	"key.simple-info-hud.state": "Alterna Simples, Avançado, Desligado"
 }

@@ -1,5 +1,4 @@
 {
 	"key.category.simple-info-hud": "Simple Info HUD Mod",
-	"key.simple-info-hud.show": "Show (enable/disable)",
-	"key.simple-info-hud.advanced": "Show advanced info"
+	"key.simple-info-hud.state": "Toggle Simple, Advanced, Disabled"
 }
