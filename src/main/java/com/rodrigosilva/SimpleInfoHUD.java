@@ -115,8 +115,10 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		msgX += render(msgX, "[%-2s %+6.1f°]", direction, angle);
 
 		// Minecraft World Day and Time
+		if (state == State.FULL) {
+			msgX += render(msgX, "Day %d", WORLD_TICKS / DAY_TICKS);
+		}
 		Color time_color = getWorldTimeColor();
-		msgX += render(msgX, "Day %d", WORLD_TICKS / DAY_TICKS);
 		msgX += render(msgX, time_color, "%s", getWorldTime());
 		if (state == State.FULL) {
 			msgX += render(msgX, time_color, "T%5d", WORLD_TICKS % DAY_TICKS);

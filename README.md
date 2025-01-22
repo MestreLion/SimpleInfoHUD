@@ -37,7 +37,6 @@ Example:
 Pressing the display mode key once displays additional information:
 
 - Exact facing angle, from `-180°` to `+180°` at North. `0°` is South and `+90°` is East.
-- World day
 - World time, in `HH:MM` format. To match the [clock](https://minecraft.wiki/w/Clock) item, [day starts at 6AM](https://minecraft.wiki/w/Daylight_cycle).
   Colors indicate some events during the sunset (dusk), night, and sunrise (dawn):
   - **`18:00`**: Daytime ends and Sunset begins, Villagers go to their beds and sleep
@@ -52,10 +51,11 @@ Pressing the display mode key once displays additional information:
 
 Example:
 
-`[220  16 440] [NE +132.5°] Day 123 18:32 Jungle`
+`[220  16 440] [NE +132.5°] 18:32 Jungle`
 
 Pressing the key again displays more additional information:
 
+- World day
 - Exact world time in [game ticks](https://minecraft.wiki/w/Tick). A Minecraft Day lasts 24000 ticks.
 - Real-life local time, in `HH:MM:SS` format.
 - Frames per second (FPS)
@@ -64,7 +64,7 @@ Example:
 
 `[220  16 440] [NE +132.5°] Day 123 18:32 T12542 21:52:45 Jungle 60 FPS`
 
-Press once more to disable the HUD, and again to cycle back to displaying simple information.
+Press the key once more to disable the HUD, and again to cycle back to displaying simple information.
 
 * * *
 
