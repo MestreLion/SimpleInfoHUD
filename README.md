@@ -25,10 +25,19 @@ Valuable information in very little screen area!
 Usage and details
 ------------------
 
-`F4` toggles HUD on and off, configurable in Minecraft "Controls" setting. By default is displays:
+`F4` cycles HUD display mode, configurable in Minecraft "Controls" setting. By default is displays:
 
 - Coordinates: `[x y z]`, `y` being the altitude / layer.
 - Facing direction: `N`orth, `S`outh, `W`est, `E`ast, `NW`, `NE`, `SW`, `SE`.
+
+Example:
+
+`[220  16 440] [NE]`
+
+Pressing the display mode key once displays additional information:
+
+- Exact facing angle, from `-180°` to `+180°` at North. `0°` is South and `+90°` is East.
+- World day
 - World time, in `HH:MM` format. To match the [clock](https://minecraft.wiki/w/Clock) item, [day starts at 6AM](https://minecraft.wiki/w/Daylight_cycle).
   Colors indicate some events during the sunset (dusk), night, and sunrise (dawn):
   - **`18:00`**: Daytime ends and Sunset begins, Villagers go to their beds and sleep
@@ -39,19 +48,23 @@ Usage and details
   - **`06:00`**: Sunrise ends and Daytime begins, Players and Villagers awaken and rise from their beds
   - The above timestamps are for clear/sunny weather.
     Rains and Thunderstorms extend bed usage, hostile mob spawning and no burning periods, so they start earlier and end later.
+- Biome human-friendly name, translated to your current game language
 
+Example:
 
-And by holding `Right ALT` (also configurable), additional information is displayed:
+`[220  16 440] [NE +132.5°] Day 123 18:32 Jungle`
 
-- Exact facing angle, from `-180°` to `+180°` at North. `0°` is South and `+90°` is East.
+Pressing the key again displays more additional information:
+
 - Exact world time in [game ticks](https://minecraft.wiki/w/Tick). A Minecraft Day lasts 24000 ticks.
 - Real-life local time, in `HH:MM:SS` format.
-- Biome human-friendly name, translated to your current game language
 - Frames per second (FPS)
 
-An example would be:
+Example:
 
-`[220  16 440] [NE +132.5°] 18:32 T12542 21:52:45 Jungle 60 FPS`
+`[220  16 440] [NE +132.5°] Day 123 18:32 T12542 21:52:45 Jungle 60 FPS`
+
+Press once more to disable the HUD, and again to cycle back to displaying simple information.
 
 * * *
 
@@ -85,7 +98,7 @@ git clone https://github.com/MestreLion/SimpleInfoHUD.git
 cd SimpleInfoHUD
 ./gradlew build
 ```
-The resulting `.jar`s are found at `./build/libs`, and can be used install the mod.
+The resulting `.jar`s are found at `./build/libs`, and can be used to install the mod.
 
 * * *
 
@@ -96,8 +109,9 @@ To-Do List
 - Use more colors:
 	- Biome, Temperature, etc
 	- Altitude: blue for Sea Level, yellow/cyan/red for top Gold, Diamonds, Lava Lakes, etc
-- World "Age" in days, such as `Day 42`, and perhaps Week/Moon phase.
-- Allow _some_ basic customization, such as HUD position.
+- Week/Moon phase.
+- Allow _basic_ customization, such as HUD position, size and color.
+- Config file to persist display mode.
 - Automatic publish on Modrinth, CurseForge and Github releases via Github actions
 - Branches for distinct major Minecraft versions.
 
