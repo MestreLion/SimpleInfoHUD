@@ -115,8 +115,11 @@ public class SimpleInfoHUD implements ClientModInitializer {
 		msgX += render(msgX, "[%-2s %+6.1f°]", direction, angle);
 
 		// Minecraft World Time
+		long day = WORLD_TICKS / DAY_TICKS;
 		long ticks = WORLD_TICKS % DAY_TICKS;
-		msgX += render(msgX, getWorldTimeColor(), "%s T%5d", getWorldTime(), ticks);
+		msgX += render(
+			msgX, getWorldTimeColor(), "Day %d %s T%5d", day, getWorldTime(), ticks
+		);
 
 		// Real Time
 		msgX += render(msgX, getRealTime());
